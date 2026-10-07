@@ -9,10 +9,9 @@ public class SistemaCarniceriaGUI extends JFrame {
     private CardLayout cardLayout;
 
     public SistemaCarniceriaGUI() {
-        // Look and Feel moderno (Se recomienda agregar la librería FlatLaf y reemplazar esta línea)
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -26,12 +25,27 @@ public class SistemaCarniceriaGUI extends JFrame {
         // --- PANEL LATERAL (Menú) ---
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(new Color(40, 44, 52)); // Color oscuro corporativo
-        sidebar.setPreferredSize(new Dimension(240, 0));
+        sidebar.setBackground(new Color(201, 50, 0)); // Color oscuro corporativo
+        sidebar.setPreferredSize(new Dimension(250, 0));
 
-        // Logo del negocio
+        // 1. Cargar la imagen (Cambiá "logo.png" por el nombre exacto de tu archivo) //recordar que esto es absoluto luego va a cambiarse a relativo
+        java.net.URL imgUrl = getClass().getResource("/assets/transparente.png");
+        ImageIcon iconoOriginal = new ImageIcon(imgUrl);
+
+        // 2. Escalar la imagen para que no desborde el panel (ejemplo: 150x150 píxeles)
+        Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(230, 180, Image.SCALE_SMOOTH);
+        ImageIcon iconoLogo = new ImageIcon(imagenEscalada);
+
+        // 3. Crear el JLabel pasando el texto y el ícono
         JLabel logoLabel = new JLabel("<html><div style='text-align: center; color: white;'>" +
-                "<h2>[LOGO NEGOCIO]</h2><p>Carniceria Don Gerbacio</p></div></html>");
+                "<h3>Carniceria Don Gerbacio</h3></div></html>", iconoLogo, JLabel.CENTER);
+        
+        // 4. Alinear para que el texto quede exactamente debajo de la imagen
+        logoLabel.setVerticalTextPosition(JLabel.BOTTOM);
+        logoLabel.setHorizontalTextPosition(JLabel.CENTER);
+        // Separación entre imagen y texto
+        logoLabel.setIconTextGap(15); 
+
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoLabel.setBorder(BorderFactory.createEmptyBorder(30, 10, 40, 10));
         sidebar.add(logoLabel);
@@ -186,11 +200,19 @@ public class SistemaCarniceriaGUI extends JFrame {
 
     private JButton createSidebarButton(String text) {
         JButton btn = new JButton(text);
-        btn.setMaximumSize(new Dimension(240, 50));
+        
+        // Hacemos que el ancho sea flexible al máximo para que ocupe todo el sidebar (altura fija de 50)
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        btn.setPreferredSize(new Dimension(0, 50)); 
+        
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btn.setForeground(new Color(220, 220, 220));
-        btn.setBackground(new Color(40, 44, 52));
+        btn.setForeground(Color.WHITE);
+        
+        // Opcional: Te puse el mismo color naranja/rojo del sidebar 
+        // para que queden integrados, o podés dejarle otro tono si preferís contraste.
+        btn.setBackground(new Color(40, 44, 52)); 
+        
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));

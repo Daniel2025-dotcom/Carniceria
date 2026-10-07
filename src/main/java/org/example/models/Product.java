@@ -3,10 +3,11 @@ package org.example.models;
 public class Product {
     private String name;
     private String description;
-    private double price;
+    private float price;
+    private float stockActual;
+    private String tipoVenta;
     private String code;
-
-    public Product(String name, String description, double price, String code) {
+    public Product(String name, String description, float price,float stockActual,String tipoVenta, String code) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -29,11 +30,11 @@ public class Product {
         this.description = description;
     }
 
-    public double getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -44,4 +45,8 @@ public class Product {
     public void setCode(String code) {
         this.code = code;
     }
+    public float getStockActual() {return stockActual;}
+    public void setStockActual(float stockActual) {this.stockActual = stockActual;}
+    public String getTipoVenta() {return tipoVenta;}
+    public void setTipoVenta(String tipoVenta) {this.tipoVenta = tipoVenta;}
 }
