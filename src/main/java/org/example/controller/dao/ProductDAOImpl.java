@@ -12,9 +12,8 @@ public class ProductDAOImpl implements ProductDAO {
     public void create(Product p) {
         String sql = "INSERT INTO producto (codigo_barras, nombre, descripcion, precio_base, stock_actual, tipo_venta) VALUES (?, ?, ?, ?, ?, ?)";
 
-        Connection con = Database.getInstance().getConexion();
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Database.getInstance().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getCode());
             ps.setString(2, p.getName());
             ps.setString(3, p.getDescription());
@@ -26,11 +25,13 @@ public class ProductDAOImpl implements ProductDAO {
             System.err.println("Error al insertar producto: " + e.getMessage());
         }
     }
+
     @Override
     public void update(Product p) {
         String sql = "UPDATE producto SET nombre=?, descripcion=?, precio_base=?, stock_actual=?, tipo_venta=? WHERE codigo_barras=?";
-        Connection con = Database.getInstance().getConexion();
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+        try (Connection con = Database.getInstance().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
             ps.setFloat(3, p.getPrice());
@@ -61,16 +62,17 @@ public class ProductDAOImpl implements ProductDAO {
         try (Connection con = Database.getInstance().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Product(
-                        rs.getString("nombre"),
-                        rs.getString("descripcion"),
-                        rs.getFloat("precio_base"),
-                        rs.getFloat("stock_actual"),
-                        rs.getString("tipo_venta"),
-                        rs.getString("codigo_barras")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Product(
+                            rs.getString("nombre"),
+                            rs.getString("descripcion"),
+                            rs.getFloat("precio_base"),
+                            rs.getFloat("stock_actual"),
+                            rs.getString("tipo_venta"),
+                            rs.getString("codigo_barras")
+                    );
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error al buscar producto: " + e.getMessage());
@@ -82,8 +84,9 @@ public class ProductDAOImpl implements ProductDAO {
     public List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM producto";
-        Connection con = Database.getInstance().getConexion();
-        try (PreparedStatement ps = con.prepareStatement(sql);
+
+        // ResultSet, Statement y Connection adentro del try
+        try (Connection con = Database.getInstance().getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {

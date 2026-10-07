@@ -15,6 +15,12 @@ public class Deal {
         this.date = LocalDateTime.now();
         this.totalPrice = calcularTotal(items);
     }
+    public Deal(int id, LocalDateTime date, float totalPrice, PaymentMethod paymentMethod) {
+        this.id = id;
+        this.date = date;
+        this.totalPrice = totalPrice;
+        this.paymentMethod = paymentMethod;
+    }
 
     private float calcularTotal(List<Item> listaItems) {
         float total = 0;

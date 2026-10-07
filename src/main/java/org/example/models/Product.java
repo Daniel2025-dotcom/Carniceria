@@ -11,6 +11,8 @@ public class Product {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.stockActual = stockActual;
+        this.tipoVenta = tipoVenta;
         this.code = code;
     }
 

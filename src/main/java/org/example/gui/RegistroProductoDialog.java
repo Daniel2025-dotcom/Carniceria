@@ -44,15 +44,11 @@ public class RegistroProductoDialog extends JDialog {
         }
         cmbTipoVenta.setFont(fuenteInput);
 
-        // Agregar al formulario
         panelFormulario.add(crearLabel("Código de Barras:", fuenteLabel));
         panelFormulario.add(txtCodigo);
 
         panelFormulario.add(crearLabel("Nombre:", fuenteLabel));
         panelFormulario.add(txtNombre);
-
-        panelFormulario.add(crearLabel("Descripción:", fuenteLabel));
-        panelFormulario.add(txtDescripcion);
 
         panelFormulario.add(crearLabel("Precio Base ($):", fuenteLabel));
         panelFormulario.add(txtPrecioBase);
@@ -90,7 +86,7 @@ public class RegistroProductoDialog extends JDialog {
     private void guardarProducto() {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        String desc = txtDescripcion.getText();
+        String desc = "Sin descripcion de momento";
         String precio = txtPrecioBase.getText();
         String stock = txtStock.getText();
         String tipoVenta = (String) cmbTipoVenta.getSelectedItem();
@@ -107,7 +103,7 @@ public class RegistroProductoDialog extends JDialog {
             productDAO.create(new Product(nombre,desc,precioVal,stockVal,tipoVenta,codigo));
 
             JOptionPane.showMessageDialog(this, "Producto guardado exitosamente.");
-            dispose(); // Cierra la ventana tras guardar
+            dispose();
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "El precio y el stock deben ser valores numéricos válidos.", "Error", JOptionPane.ERROR_MESSAGE);

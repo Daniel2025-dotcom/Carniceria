@@ -4,26 +4,26 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 public class Database {
     private static Database instance;
-    private Connection connection;
+    private String url = System.getenv("URL");
+    private String user = System.getenv("USER");
+    private String password = System.getenv("PASSWORD");
+
     private Database() {
         try {
             Class.forName("org.postgresql.Driver");
-            String url = System.getenv("URL");
-            String user = System.getenv("USER");
-            String password = System.getenv("PASSWORD");
-            this.connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("fail to connect: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.err.println("No se encontró el Driver: " + e.getMessage());
         }
-        
     }
+
     public static Database getInstance() {
         if (instance == null) {
             instance = new Database();
         }
         return instance;
     }
-      public Connection getConexion() {
-        return connection;
+
+    public Connection getConexion() throws SQLException {
+        return DriverManager.getConnection(url, user, password);
     }
 }
