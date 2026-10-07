@@ -11,8 +11,10 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public void create(Product p) {
         String sql = "INSERT INTO producto (codigo_barras, nombre, descripcion, precio_base, stock_actual, tipo_venta) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = Database.getInstance().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+
+        Connection con = Database.getInstance().getConexion();
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getCode());
             ps.setString(2, p.getName());
             ps.setString(3, p.getDescription());
@@ -24,12 +26,11 @@ public class ProductDAOImpl implements ProductDAO {
             System.err.println("Error al insertar producto: " + e.getMessage());
         }
     }
-
     @Override
     public void update(Product p) {
         String sql = "UPDATE producto SET nombre=?, descripcion=?, precio_base=?, stock_actual=?, tipo_venta=? WHERE codigo_barras=?";
-        try (Connection con = Database.getInstance().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        Connection con = Database.getInstance().getConexion();
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
             ps.setFloat(3, p.getPrice());
@@ -81,7 +82,8 @@ public class ProductDAOImpl implements ProductDAO {
     public List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM producto";
-        try (Connection con = Database.getInstance().getConexion();
+        Connection con = Database.getInstance().getConexion();
+        try (PreparedStatement ps = con.prepareStatement(sql);
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {

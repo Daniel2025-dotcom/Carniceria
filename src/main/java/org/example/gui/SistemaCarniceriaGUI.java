@@ -1,13 +1,16 @@
 package org.example.gui;
+import org.example.controller.dao.ProductDAO;
+import org.example.controller.dao.ProductDAOImpl;
+import org.example.models.Product;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class SistemaCarniceriaGUI extends JFrame {
-
+    private ProductDAOImpl productDAO = new ProductDAOImpl();
     private JPanel cardPanel;
     private CardLayout cardLayout;
-
     public SistemaCarniceriaGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -28,23 +31,18 @@ public class SistemaCarniceriaGUI extends JFrame {
         sidebar.setBackground(new Color(201, 50, 0)); // Color oscuro corporativo
         sidebar.setPreferredSize(new Dimension(250, 0));
 
-        // 1. Cargar la imagen (Cambiá "logo.png" por el nombre exacto de tu archivo) //recordar que esto es absoluto luego va a cambiarse a relativo
         java.net.URL imgUrl = getClass().getResource("/assets/transparente.png");
         ImageIcon iconoOriginal = new ImageIcon(imgUrl);
 
-        // 2. Escalar la imagen para que no desborde el panel (ejemplo: 150x150 píxeles)
         Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(230, 180, Image.SCALE_SMOOTH);
         ImageIcon iconoLogo = new ImageIcon(imagenEscalada);
 
-        // 3. Crear el JLabel pasando el texto y el ícono
         JLabel logoLabel = new JLabel("<html><div style='text-align: center; color: white;'>" +
                 "<h3>Carniceria Don Gerbacio</h3></div></html>", iconoLogo, JLabel.CENTER);
         
-        // 4. Alinear para que el texto quede exactamente debajo de la imagen
         logoLabel.setVerticalTextPosition(JLabel.BOTTOM);
         logoLabel.setHorizontalTextPosition(JLabel.CENTER);
-        // Separación entre imagen y texto
-        logoLabel.setIconTextGap(15); 
+        logoLabel.setIconTextGap(15);
 
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoLabel.setBorder(BorderFactory.createEmptyBorder(30, 10, 40, 10));
@@ -60,19 +58,15 @@ public class SistemaCarniceriaGUI extends JFrame {
         sidebar.add(btnCaja);
         sidebar.add(Box.createVerticalGlue());
 
-        // --- PANEL CENTRAL (Vistas dinámicas) ---
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        // Crear las vistas
         cardPanel.add(crearPanelVentas(), "VENTAS");
         cardPanel.add(crearPanelStock(), "STOCK");
 
-        // Eventos de navegación
         btnVentas.addActionListener(e -> cardLayout.show(cardPanel, "VENTAS"));
         btnStock.addActionListener(e -> cardLayout.show(cardPanel, "STOCK"));
 
-        // Ensamblar
         add(sidebar, BorderLayout.WEST);
         add(cardPanel, BorderLayout.CENTER);
     }
@@ -94,7 +88,6 @@ public class SistemaCarniceriaGUI extends JFrame {
         txtScanner.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)));
-        // Idealmente: txtScanner.requestFocus() se llama cada vez que se cobra para volver a escanear
 
         topPanel.add(lblScanner, BorderLayout.WEST);
         topPanel.add(txtScanner, BorderLayout.CENTER);
@@ -104,7 +97,6 @@ public class SistemaCarniceriaGUI extends JFrame {
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
         JTable tablaVentas = new JTable(modeloTabla);
 
-        // Estilos de tabla lineales y planos
         tablaVentas.setRowHeight(35);
         tablaVentas.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         tablaVentas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -113,15 +105,12 @@ public class SistemaCarniceriaGUI extends JFrame {
         tablaVentas.setShowGrid(true);
         tablaVentas.setGridColor(new Color(225, 225, 225));
         tablaVentas.setBorder(null);
-
-        // Datos de prueba (combinando unidad y peso)
         modeloTabla.addRow(new Object[]{"2000001", "Asado de Novillo", "$ 6.500,00", "1.250 Kg", "$ 8.125,00"});
         modeloTabla.addRow(new Object[]{"77912345678", "Gaseosa Cola 2.25L", "$ 2.300,00", "1 Un", "$ 2.300,00"});
 
         JScrollPane scrollTabla = new JScrollPane(tablaVentas);
         scrollTabla.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
-        // Bottom: Totales y Botones
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(Color.WHITE);
 
@@ -153,7 +142,6 @@ public class SistemaCarniceriaGUI extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Top: Búsqueda y Agregar
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -165,7 +153,10 @@ public class SistemaCarniceriaGUI extends JFrame {
         // txtBuscar.putClientProperty("JTextField.placeholderText", "Buscar producto..."); // FlatLaf feature
 
         JButton btnAgregar = createActionButton("+ Nuevo Producto", new Color(0, 120, 215));
-
+        btnAgregar.addActionListener(e -> {
+            RegistroProductoDialog dialog = new RegistroProductoDialog(SistemaCarniceriaGUI.this);
+            dialog.setVisible(true);
+        });
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setBackground(Color.WHITE);
         JLabel lblBuscar = new JLabel("Buscar:");
@@ -177,7 +168,7 @@ public class SistemaCarniceriaGUI extends JFrame {
         topPanel.add(btnAgregar, BorderLayout.EAST);
 
         // Center: Tabla Stock
-        String[] columnas = {"Código", "Descripción", "Categoría", "Stock / Kg", "Precio Base"};
+        String[] columnas = {"Código", "Descripción", "Stock / Kg", "Precio Base"};
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
         JTable tablaStock = new JTable(modeloTabla);
 
@@ -185,9 +176,11 @@ public class SistemaCarniceriaGUI extends JFrame {
         tablaStock.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         tablaStock.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         tablaStock.getTableHeader().setBackground(new Color(245, 245, 245));
-
-        modeloTabla.addRow(new Object[]{"2000001", "Asado de Novillo", "Carnicería", "45.00 Kg", "$ 6.500,00"});
-        modeloTabla.addRow(new Object[]{"77912345678", "Gaseosa Cola 2.25L", "Kiosco", "24 Un", "$ 2.300,00"});
+        tablaStock.getTableHeader().setBorder(BorderFactory.createLineBorder(new Color(200,200,200)));
+        tablaStock.setShowGrid(true);
+        tablaStock.setGridColor(new Color(225, 225, 225));
+        tablaStock.setBorder(null);
+        //fillTablaProduct(modeloTabla);
 
         JScrollPane scrollTabla = new JScrollPane(tablaStock);
         scrollTabla.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
@@ -229,10 +222,14 @@ public class SistemaCarniceriaGUI extends JFrame {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
     }
+    private void  fillTablaProduct(DefaultTableModel modeltable){
+        for (Product product : productDAO.getAll()){
+            modeltable.addRow(new Object[]{product.getCode(), product.getName(), product.getStockActual(), product.getPrice()});
+        }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new SistemaCarniceriaGUI().setVisible(true);
-        });
+
+
     }
+
+
 }

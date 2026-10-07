@@ -17,29 +17,26 @@ public class DealDAOImpl implements DealDAO {
             con.setAutoCommit(false);
 
             try (PreparedStatement psDeal = con.prepareStatement(sqlDeal)) {
-                psDeal.setString(1, deal.getPaymentMethod().name()); // Asume que es un Enum
+                psDeal.setString(1, deal.getPaymentMethod().name());
                 psDeal.setFloat(2, deal.getTotalPrice());
-                psDeal.setTimestamp(3, Timestamp.valueOf(deal.getDate())); // LocalDateTime a Timestamp
+                psDeal.setTimestamp(3, Timestamp.valueOf(deal.getDate()));
 
                 ResultSet rs = psDeal.executeQuery();
                 if (rs.next()) {
                     generatedId = rs.getInt(1);
-                    deal.setId(generatedId); // Asignamos el ID al objeto Java
+                    deal.setId(generatedId);
                 }
             }
 
-            // 2. Guardar Items y descontar stock
             ProductDAO productDAO = new ProductDAOImpl();
             try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
                 for (Item item : deal.getItems()) {
                     psItem.setInt(1, generatedId);
                     psItem.setString(2, item.getProduct().getCode());
                     psItem.setFloat(3, item.getQuantity());
-                    psItem.setFloat(4, item.getProduct().getPrice()); // Precio al momento de vender
+                    psItem.setFloat(4, item.getProduct().getPrice());
                     psItem.setFloat(5, item.getSubtotal());
                     psItem.executeUpdate();
-
-                    // 3. Descontar el stock por cada producto vendido
                     productDAO.updateStock(item.getProduct().getCode(), item.getQuantity());
                 }
             }
@@ -48,7 +45,6 @@ public class DealDAOImpl implements DealDAO {
 
         } catch (SQLException e) {
             try {
-                // Si hay error en algún paso, revertimos todo
                 con.rollback();
             } catch (SQLException ex) {
                 System.err.println("Error crítico en Rollback: " + ex.getMessage());
