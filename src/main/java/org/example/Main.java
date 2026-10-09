@@ -17,10 +17,15 @@ public class Main {
     }
 
     private static void initDataBase() {
-        String user = System.getenv("USER");
-        String password = System.getenv("PASSWORD");
+        // Credenciales correctas de PostgreSQL que configuraste
+        String user = "postgres";
+        String password = "admin";
+
         String urlPostgresDefault = "jdbc:postgresql://localhost:5432/postgres";
+        String urlCarniceria = "jdbc:postgresql://localhost:5432/carniceria";
         String nombreBD = "carniceria";
+
+        // 1. Conectar a la BD 'postgres' para verificar/crear la BD 'carniceria'
         try (Connection conDefault = DriverManager.getConnection(urlPostgresDefault, user, password);
              Statement st = conDefault.createStatement()) {
             ResultSet rs = st.executeQuery("SELECT 1 FROM pg_database WHERE datname = '" + nombreBD + "'");
@@ -30,12 +35,13 @@ public class Main {
             } else {
                 System.out.println("La base de datos '" + nombreBD + "' ya existe. Verificando tablas...");
             }
-
         } catch (Exception e) {
             System.err.println("Error al crear la base de datos: " + e.getMessage());
             return;
         }
-        try (Connection conCarniceria = Database.getInstance().getConexion();
+
+        // 2. Conectar directamente a la BD 'carniceria' recién creada o existente para las tablas
+        try (Connection conCarniceria = DriverManager.getConnection(urlCarniceria, user, password);
              Statement stTablas = conCarniceria.createStatement()) {
 
             String sqlTablas = """

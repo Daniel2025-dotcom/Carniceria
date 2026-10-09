@@ -7,7 +7,6 @@ public class Database {
     private String url = System.getenv("URL");
     private String user = System.getenv("USER");
     private String password = System.getenv("PASSWORD");
-
     private Database() {
         try {
             Class.forName("org.postgresql.Driver");

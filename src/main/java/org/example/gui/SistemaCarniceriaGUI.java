@@ -239,7 +239,6 @@ public class SistemaCarniceriaGUI extends JFrame {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)));
 
         JButton btnAgregar = createActionButton("+ Nuevo Producto", new Color(0, 120, 215));
-
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setBackground(Color.WHITE);
         JLabel lblBuscar = new JLabel("Buscar:");
@@ -253,6 +252,12 @@ public class SistemaCarniceriaGUI extends JFrame {
         String[] columnas = {"Código", "Descripción", "Stock / Kg", "Precio Base"};
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
         JTable tablaStock = new JTable(modeloTabla);
+        btnAgregar.addActionListener(e -> {
+            RegistroProductoDialog dialog = new RegistroProductoDialog(this);
+            dialog.setVisible(true);
+            modeloTabla.setRowCount(0);
+            fillTablaProduct(modeloTabla);
+        });
 
         tablaStock.setRowHeight(35);
         tablaStock.setFont(new Font("Segoe UI", Font.PLAIN, 15));
